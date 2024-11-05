@@ -1,0 +1,72 @@
+#include <stdio.h>
+
+#define SIZE 3
+
+// Funktion zum Anzeigen des Spielfelds
+void displayBoard(char board[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            printf(" %c ", board[i][j]);
+            if (j < SIZE - 1) printf("|");
+        }
+        printf("\n");
+        if (i < SIZE - 1) printf("---|---|---\n");
+    }
+}
+
+// Funktion, um zu prüfen, ob ein Spieler gewonnen hat
+char checkWin(char board[SIZE][SIZE]) {
+    // Zeilen und Spalten prüfen
+    for (int i = 0; i < SIZE; i++) {
+        if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ')
+            return board[i][0];
+        if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ')
+            return board[0][i];
+    }
+    // Diagonalen prüfen
+    if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ')
+        return board[0][0];
+    if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ')
+        return board[0][2];
+
+    return ' '; // Kein Gewinner
+}
+
+// Hauptprogramm
+int main() {
+    char board[SIZE][SIZE] = {
+        {'1', '2', '3'},
+        {'4', '5', '6'},
+        {'7', '8', '9'}
+    };
+    int move;
+    char currentPlayer = 'X';
+
+    for (int turn = 0; turn < SIZE * SIZE; turn++) {
+        displayBoard(board);
+        printf("Spieler %c, bitte wähle ein Feld (1-9): ", currentPlayer);
+        scanf("%d", &move);
+        
+        // Eingabe in Indizes umwandeln
+        int row = (move - 1) / SIZE;
+        int col = (move - 1) % SIZE;
+
+        if (board[row][col] != 'X' && board[row][col] != 'O') {
+            board[row][col] = currentPlayer;
+
+            if (checkWin(board) != ' ') {
+                displayBoard(board);
+                printf("Spieler %c hat gewonnen!\n", currentPlayer);
+                return 0;
+            }
+            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X'; // Spieler wechseln
+        } else {
+            printf("Ungültiger Zug, bitte erneut versuchen.\n");
+            turn--; // Gleicher Spieler bleibt dran
+        }
+    }
+    displayBoard(board);
+    printf("Unentschieden!\n");
+    return 0;
+}
+
